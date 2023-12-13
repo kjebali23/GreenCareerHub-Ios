@@ -1,60 +1,63 @@
-// ResetPasswordView.swift
-
 import SwiftUI
-
 struct ResetPasswordView: View {
-    @ObservedObject var viewModel: ForgotPassViewModel
+    @ObservedObject var viewModel: ResetPasswordViewModel
     @Binding var code: String
     @Binding var newPassword: String
 
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.customNavyBlue, Color.customBlue]), startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
+        VStack {
+            Text("Enter OTP Code and New Password")
+                .font(.title)
+                .padding()
 
-            VStack {
-                Image("logo (2)")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 200, height: 120)
-                    .padding(.bottom, 30)
+            TextField("OTP Code", text: $code)
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.7)))
+                .padding(.bottom, 20)
 
-                VStack(spacing: 20) {
-                    Text("Reset Password")
-                        .font(.title)
-                        .foregroundColor(.white)
-                        .padding(.bottom, 20)
+            SecureField("New Password", text: $newPassword)
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.7)))
+                .padding(.bottom, 20)
 
-                    SecureField("Code", text: $code)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.7)))
-                        .padding(.bottom, 10)
+            SecureField("Confirm Password", text: $viewModel.confirmPassword)
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.7)))
+                .padding(.bottom, 20)
 
-                    SecureField("New Password", text: $newPassword)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.7)))
-                        .padding(.bottom, 30)
-
-                    Button(action: {
-                        viewModel.sendResetPasswordLink()
-                        print("isResetPasswordLinkSent: \(viewModel.isResetPasswordLinkSent)")
-                    }) {
-                        Text("Send Reset Password Link")
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color.black))
-                    }
-
-                    .alert(item: $viewModel.resetPasswordAlertItem) { alertItem in
-                        Alert(title: Text(alertItem.title), message: alertItem.message.map(Text.init))
-                    }
-                }
-                .padding(.horizontal, 30)
+            Button(action: {
+                viewModel.resetPassword(code: code, newPassword: newPassword)
+            }) {
+                Text("Reset Password")
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.black))
             }
-            .padding()
+            .padding(.horizontal, 30)
+
+            if let result = viewModel.resetPasswordResult {
+                switch result {
+                case .success(let message):
+                    Text(message)
+                        .foregroundColor(.green)
+                        .padding()
+                case .failure(let error):
+                    Text(error.localizedDescription)
+                        .foregroundColor(.red)
+                        .padding()
+                }
+            }
         }
-        .navigationBarTitle("Reset Password", displayMode: .inline)
+        .padding()
     }
 }
+
+struct ResetPasswordView_Previews: PreviewProvider {
+    static var previews: some View {
+        ResetPasswordView(viewModel: ResetPasswordViewModel(), code: .constant("123456"), newPassword: .constant(""))
+    }
+}
+
+
 

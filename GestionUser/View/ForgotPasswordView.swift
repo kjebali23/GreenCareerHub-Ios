@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ForgotPasswordView: View {
     @StateObject private var viewModel = ForgotPassViewModel()
+    @StateObject private var coordinator = ForgotPasswordCoordinator()
 
     var body: some View {
         NavigationView {
@@ -10,14 +11,14 @@ struct ForgotPasswordView: View {
                     .ignoresSafeArea()
 
                 VStack {
-                    Image("logo (2)")
+                    Image("logo (2)") // Replace with your actual logo name
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 200, height: 120)
                         .padding(.bottom, 30)
 
                     VStack(spacing: 20) {
-                        if !viewModel.isResetPasswordLinkSent {
+                        if !viewModel.shouldNavigateToOTPView {
                             Text("Forgot Password?")
                                 .font(.title)
                                 .foregroundColor(.white)
@@ -28,6 +29,15 @@ struct ForgotPasswordView: View {
                                 .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.7)))
                                 .padding(.bottom, 30)
 
+                            Button(action: {
+                                viewModel.sendResetPasswordLink()
+                            }) {
+                                Text("Send Reset Password Link")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.black))
+                            }
                         } else {
                             Text("Reset Password Link Sent!")
                                 .font(.title)
@@ -35,33 +45,28 @@ struct ForgotPasswordView: View {
                                 .padding(.bottom, 20)
 
                             NavigationLink(
-                                destination: ResetPasswordView(viewModel: viewModel, code: $viewModel.code, newPassword: $viewModel.newPassword),
-                                isActive: $viewModel.isResetPasswordLinkSent
-                            ) {
+                                destination: OtpView(email: viewModel.email, coordinator: coordinator),
+                                isActive: $viewModel.shouldNavigateToOTPView
+                            )
+ {
                                 EmptyView()
+                            }
+                            .onChange(of: viewModel.shouldNavigateToOTPView) { value in
+                                print("shouldNavigateToOTPView changed: \(value)")
                             }
                             .hidden()
 
                         }
-
-                        Button(action: {
-                            viewModel.sendResetPasswordLink()
-                        }) {
-                            Text("Send Reset Password Link")
-                                .foregroundColor(.white)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(Color.black))
-                        }
                     }
-                    .padding(.horizontal, 30)
+                    .padding()
                 }
-                .padding()
             }
             .navigationBarTitle("Forgot Password", displayMode: .inline)
+            .environmentObject(coordinator)
         }
     }
 }
+
 struct ForgotPasswordView_Previews: PreviewProvider {
     static var previews: some View {
         ForgotPasswordView()

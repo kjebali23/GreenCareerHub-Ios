@@ -6,62 +6,8 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                NavigationLink(destination: LoginView()) {
-                    Text("Login")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                }
-                .padding()
-                
-                NavigationLink(destination: ForgotPasswordView()) {
-                    Text("Forgot Password")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                }
-                .padding()
-                
-                NavigationLink(destination: RegisterView()) {
-                    Text("Register")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                }
-                .padding()
-                
-                NavigationLink(destination: ResetPasswordView(viewModel: ForgotPassViewModel(), code: .constant(""), newPassword: .constant("")),
-                               isActive: $isResetPasswordActive
-                ) {
-                    Text("Reset Password Manually")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                }
-                .padding()
-
-                NavigationLink(destination: UserProfileView()) {
-                    Text("User Profile")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                }
-                .padding()
-
-                NavigationLink(destination: ForgotPasswordView(),
-                               isActive: $isForgotPasswordActive
-                ){
-                    EmptyView()
-                }
-                .hidden()
-            }
-            .navigationBarTitle("App Navigation", displayMode: .inline)
+            LoginView() // Set LoginView as the root view
+                .navigationBarTitle("App Navigation", displayMode: .inline)
         }
     }
 }

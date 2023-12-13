@@ -9,5 +9,5 @@ import Foundation
 
 struct AuthResponse: Codable {
     let message: String
-    let user: User
+    let user: User?
 }

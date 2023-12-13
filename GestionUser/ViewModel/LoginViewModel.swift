@@ -13,7 +13,8 @@ class LoginViewModel: ObservableObject{
     @Published var password = ""
     @Published var loginError: String?
     @Published var isLoggedIn = false
-   
+    @Published var userId: String = ""
+
     private let authService = AuthService.shared
     
 

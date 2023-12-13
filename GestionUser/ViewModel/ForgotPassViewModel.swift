@@ -5,11 +5,8 @@ import Combine
 class ForgotPassViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var code: String = ""
-    @Published var isResetPasswordLinkSent: Bool = false {
-            didSet {
-                objectWillChange.send()
-            }
-        }
+    var coordinator: ForgotPasswordCoordinator?
+    @Published var shouldNavigateToOTPView: Bool = false // Renamed property
     @Published private(set) var isResetPasswordSuccess: Bool = false
     @Published var newPassword: String = ""
     @Published var resetPasswordResult: Result<String, Error>? = nil
@@ -34,18 +31,22 @@ class ForgotPassViewModel: ObservableObject {
                 case .success(let message):
                     self.resetPasswordResult = .success(message)
                     self.resetPasswordAlertItem = AlertItem.success(message: message)
-                    self.isResetPasswordLinkSent = true // Set it to true when the link is sent
-
-                    // Additional code to navigate to the ResetPasswordView if needed
-                    // For example, you can trigger the NavigationLink programmatically
-                    // based on the value of isResetPasswordLinkSent.
+                    self.shouldNavigateToOTPView = true // Set this to true after OTP is sent
+                    print("shouldNavigateToOTPView set to true")
                 case .failure(let error):
                     self.resetPasswordResult = .failure(error)
                     self.resetPasswordAlertItem = AlertItem.failure(error: error)
+                    print("Error sending reset password link: \(error.localizedDescription)")
                 }
             }
         }
     }
+
+
+    func navigateToOTPView() {
+        coordinator?.navigateToOTPView()
+    }
+
 
     func resetPassword(newPassword: String, code: String) {
         print("Resetting password with code: \(code)")
@@ -60,6 +61,8 @@ class ForgotPassViewModel: ObservableObject {
             self.resetPasswordResult = .failure(error)
         }
     }
+
+   
 }
 
 struct AlertItem: Identifiable {
